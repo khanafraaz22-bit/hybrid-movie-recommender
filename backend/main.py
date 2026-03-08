@@ -19,7 +19,47 @@ import tensorflow as tf
 BASE        = Path(__file__).parent.parent
 MODEL_DIR   = BASE / "data" / "models"
 PROC_DIR    = BASE / "data" / "processed"
-DB_PATH     = BASE / "backend" / "users.db"
+DB_PATH     = Path(__file__).parent / "users.db"
+
+# ── Auto-download models from Hugging Face if not present ──────────
+HF_DATASET  = "afraazkhan22/hybrid-movie-recommender-models"
+
+def _ensure_data():
+    try:
+        from huggingface_hub import hf_hub_download
+    except ImportError:
+        print("huggingface_hub not installed, skipping auto-download")
+        return
+
+    MODEL_DIR.mkdir(parents=True, exist_ok=True)
+    PROC_DIR.mkdir(parents=True, exist_ok=True)
+
+    model_files = [
+        "bpr_slim.pkl", "mf_model.pkl", "neural_model.keras",
+        "rating_scaler.pkl", "tfidf_vectorizer.pkl", "content_matrix.npz",
+        "hybrid_weights.json", "bpr_norm.json", "cq_norm.json", "content_index.parquet"
+    ]
+    proc_files = [
+        "encoders.json", "content_docs.parquet", "movie_features.parquet",
+        "ratings_clean.parquet"
+    ]
+
+    for fname in model_files:
+        dest = MODEL_DIR / fname
+        if not dest.exists():
+            print(f"Downloading {fname}...")
+            path = hf_hub_download(repo_id=HF_DATASET, filename=fname, repo_type="dataset")
+            import shutil; shutil.copy(path, dest)
+
+    for fname in proc_files:
+        dest = PROC_DIR / fname
+        if not dest.exists():
+            print(f"Downloading {fname}...")
+            hf_fname = f"processed/{fname}"
+            path = hf_hub_download(repo_id=HF_DATASET, filename=hf_fname, repo_type="dataset")
+            import shutil; shutil.copy(path, dest)
+
+_ensure_data()
 
 app = FastAPI(title="AK Movie Recommender API", version="1.0.0")
 
