@@ -212,7 +212,10 @@ N_USERS, N_MOVIES = enc["n_users"], enc["n_movies"]
 
 content_df  = pd.read_parquet(PROC_DIR / "content_docs.parquet")
 movie_feats = pd.read_parquet(PROC_DIR / "movie_features.parquet")
-ratings_df  = pd.read_parquet(PROC_DIR / "ratings_clean.parquet")
+
+# Load only userId+movieId columns to save memory
+_ratings_path = PROC_DIR / "ratings_clean.parquet"
+ratings_df  = pd.read_parquet(_ratings_path, columns=["userId", "movieId"])
 
 movie_quality = dict(zip(movie_feats["movieId"], movie_feats["bayesian_avg"]))
 ALL_MOVIES    = list(movie2idx.keys())
@@ -255,7 +258,7 @@ def get_recommendations(user_id: int, n: int = 20) -> list:
         top = movie_feats.nlargest(n, "bayesian_avg")
         return [_movie_meta(int(mid)) for mid in top["movieId"]]
 
-    seen      = set(ratings_df[ratings_df["userId"] == user_id]["movieId"])
+    seen      = set(ratings_df[ratings_df["userId"] == user_id]["movieId"].tolist())
     candidates= [mid for mid in ALL_MOVIES if mid not in seen]
     uid_idx   = user2idx[user_id]
     m_idx_arr = np.array([movie2idx[mid] for mid in candidates], dtype="int32")
