@@ -1,0 +1,44 @@
+paths:
+  raw_data: "../data/raw"
+  processed_data: "../data/processed"
+  models: "../data/models"
+  logs: "../logs"
+
+data:
+  min_ratings_per_user: 20
+  min_ratings_per_movie: 10
+  test_size: 0.2
+  random_state: 42
+  rating_scale: [0.5, 5.0]
+
+collaborative_filtering:
+  algorithm: "SVD"
+  n_factors: 150
+  n_epochs: 30
+  lr_all: 0.005
+  reg_all: 0.02
+  biased: true
+
+content_based:
+  tfidf_max_features: 10000
+  tfidf_ngram_range: [1, 2]
+  similarity_top_k: 50
+
+neural:
+  embedding_dim: 64
+  hidden_layers: [256, 128, 64]
+  dropout_rate: 0.3
+  learning_rate: 0.001
+  batch_size: 1024
+  epochs: 20
+  patience: 5
+
+hybrid:
+  cf_weight: 0.40
+  content_weight: 0.25
+  neural_weight: 0.35
+  top_n_recommendations: 10
+
+evaluation:
+  k_values: [5, 10, 20]
+  metrics: ["rmse", "mae", "precision", "recall", "ndcg"]

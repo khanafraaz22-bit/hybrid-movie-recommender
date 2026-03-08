@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+data/models/
+data/raw/
+data/processed/
+
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+backend/users.db
+
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/

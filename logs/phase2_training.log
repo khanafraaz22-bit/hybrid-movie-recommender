@@ -1,0 +1,19 @@
+2026-03-06 22:27:38,449  INFO  Phase 2 ready  |  TF 2.20.0  |  cornac 2.3.5
+2026-03-06 22:27:54,001  INFO  Train=16087404 Val=1938295 Test=1938295 Users=138450 Movies=15446
+2026-03-06 22:37:11,966  INFO  Phase 2 ready  |  TF 2.20.0  |  cornac 2.3.5
+2026-03-06 22:37:24,274  INFO  Train=16087404 Val=1938295 Test=1938295 Users=138450 Movies=15446
+2026-03-07 00:28:01,337  INFO  Phase 2 ready  |  TF 2.20.0  |  cornac 2.3.5
+2026-03-07 00:28:09,614  INFO  Train=16087404 Val=1938295 Test=1938295 Users=138450 Movies=15446
+2026-03-07 02:17:32,773  INFO  Phase 2 ready  |  TF 2.20.0  |  cornac 2.3.5
+2026-03-07 02:17:41,832  INFO  Train=16087404 Val=1938295 Test=1938295 Users=138450 Movies=15446
+2026-03-07 03:32:21,217  INFO  Building cornac dataset...
+2026-03-07 03:34:29,943  INFO  Cornac dataset: 138450 users  15442 items
+2026-03-07 03:34:41,295  INFO  Training BPR model...
+2026-03-07 04:40:09,778  INFO  BPR model saved.
+2026-03-07 04:49:05,635  INFO  Computing BPR scores on test set...
+2026-03-07 04:51:15,608  INFO  BPR Test  RMSE=1.3804  MAE=1.1734
+2026-03-07 04:53:43,842  INFO  TF-IDF: (15446, 10000)
+2026-03-07 14:14:36,363  INFO  Phase 2 ready  |  TF 2.20.0  |  cornac 2.3.5
+2026-03-07 14:14:39,726  INFO  Train=16087404 Val=1938295 Test=1938295 Users=138450 Movies=15446
+2026-03-07 14:17:40,257  INFO  Phase 2 ready  |  TF 2.20.0  |  cornac 2.3.5
+2026-03-07 14:22:15,282  INFO  Phase 2 ready  |  TF 2.20.0  |  cornac 2.3.5
