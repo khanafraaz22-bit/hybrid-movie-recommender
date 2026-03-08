@@ -155,7 +155,7 @@ _sys.modules['funksvd_module'] = _mod
 print("Loading models...")
 
 mf_model    = joblib.load(MODEL_DIR / "mf_model.pkl")
-bpr_model   = joblib.load(MODEL_DIR / "bpr_model.pkl")
+bpr_slim    = joblib.load(MODEL_DIR / "bpr_slim.pkl")
 neural_model= tf.keras.models.load_model(MODEL_DIR / "neural_model.keras")
 scaler      = joblib.load(MODEL_DIR / "rating_scaler.pkl")
 tfidf       = joblib.load(MODEL_DIR / "tfidf_vectorizer.pkl")
@@ -176,10 +176,10 @@ ratings_df  = pd.read_parquet(PROC_DIR / "ratings_clean.parquet")
 
 movie_quality = dict(zip(movie_feats["movieId"], movie_feats["bayesian_avg"]))
 ALL_MOVIES    = list(movie2idx.keys())
-BPR_UID_MAP   = bpr_model.train_set.uid_map
-BPR_IID_MAP   = bpr_model.train_set.iid_map
-U_FAC = bpr_model.u_factors
-I_FAC = bpr_model.i_factors
+BPR_UID_MAP   = bpr_slim["uid_map"]
+BPR_IID_MAP   = bpr_slim["iid_map"]
+U_FAC = bpr_slim["u_factors"]
+I_FAC = bpr_slim["i_factors"]
 
 print("✅ All models loaded.")
 init_db()
