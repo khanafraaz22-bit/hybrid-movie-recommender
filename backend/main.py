@@ -13,7 +13,6 @@ import scipy.sparse as sp
 from pathlib import Path
 import sqlite3, hashlib, secrets, time, random
 from contextlib import contextmanager
-import tensorflow as tf
 
 # ── Paths ──────────────────────────────────────────────────────────
 BASE        = Path(__file__).parent.parent
@@ -196,8 +195,38 @@ print("Loading models...")
 
 mf_model    = joblib.load(MODEL_DIR / "mf_model.pkl")
 bpr_slim    = joblib.load(MODEL_DIR / "bpr_slim.pkl")
-neural_model= tf.keras.models.load_model(MODEL_DIR / "neural_model.keras")
+_nw         = np.load(MODEL_DIR / "neural_weights.npz")
 scaler      = joblib.load(MODEL_DIR / "rating_scaler.pkl")
+
+# NeuMF weights (GMF + MLP)
+N_GMF_U = _nw["gmf_u_0"]   # (138450, 32)
+N_GMF_M = _nw["gmf_m_0"]   # (15446,  32)
+N_MLP_U = _nw["mlp_u_0"]   # (138450, 32)
+N_MLP_M = _nw["mlp_m_0"]   # (15446,  32)
+N_D1_W  = _nw["dense_0"]   # (64, 128)
+N_D1_B  = _nw["dense_1"]   # (128,)
+N_D2_W  = _nw["dense_1_0"] # (128, 64)
+N_D2_B  = _nw["dense_1_1"] # (64,)
+N_D3_W  = _nw["dense_2_0"] # (96, 1)
+N_D3_B  = _nw["dense_2_1"] # (1,)
+
+def _neural_predict_np(u_arr: np.ndarray, m_arr: np.ndarray) -> np.ndarray:
+    """Pure NumPy NeuMF inference — identical to Keras forward pass."""
+    CHUNK = 4096
+    out = np.empty(len(u_arr), dtype="float32")
+    for s in range(0, len(u_arr), CHUNK):
+        eu = u_arr[s:s+CHUNK]
+        em = m_arr[s:s+CHUNK]
+        # GMF path
+        gmf = N_GMF_U[eu] * N_GMF_M[em]
+        # MLP path
+        mlp = np.concatenate([N_MLP_U[eu], N_MLP_M[em]], axis=1)
+        mlp = np.maximum(0, mlp @ N_D1_W + N_D1_B)
+        mlp = np.maximum(0, mlp @ N_D2_W + N_D2_B)
+        # Concat + final layer
+        x   = np.concatenate([gmf, mlp], axis=1)
+        out[s:s+CHUNK] = (x @ N_D3_W + N_D3_B).flatten()
+    return out
 tfidf       = joblib.load(MODEL_DIR / "tfidf_vectorizer.pkl")
 cm          = sp.load_npz(MODEL_DIR / "content_matrix.npz")
 
@@ -279,14 +308,8 @@ def get_recommendations(user_id: int, n: int = 20) -> list:
         bpr_raw = np.zeros(len(candidates), dtype="float32")
     bpr_sc = np.clip(0.5 + (bpr_raw - BN["lo"]) / (BN["hi"] - BN["lo"] + 1e-8) * 4.5, 0.5, 5.0)
 
-    # Neural scores
-    nr_parts = []
-    for s in range(0, len(candidates), CHUNK):
-        nr_parts.append(neural_model.predict(
-            {"user": u_arr[s:s+CHUNK], "movie": m_idx_arr[s:s+CHUNK]},
-            batch_size=2048, verbose=0
-        ).flatten())
-    neural_raw = np.concatenate(nr_parts)
+    # Neural scores (pure NumPy NeuMF)
+    neural_raw = _neural_predict_np(u_arr, m_idx_arr)
     neural_sc  = np.clip(scaler.inverse_transform(neural_raw.reshape(-1,1)).flatten(), 0.5, 5.0)
 
     # Content quality
