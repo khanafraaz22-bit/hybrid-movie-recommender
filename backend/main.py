@@ -34,7 +34,7 @@ def _ensure_data():
     PROC_DIR.mkdir(parents=True, exist_ok=True)
 
     model_files = [
-        "bpr_slim.pkl", "mf_model.pkl", "neural_model.keras",
+        "bpr_slim.pkl", "mf_model.pkl", "neural_weights.npz",
         "rating_scaler.pkl", "tfidf_vectorizer.pkl", "content_matrix.npz",
         "hybrid_weights.json", "bpr_norm.json", "cq_norm.json", "content_index.parquet"
     ]
