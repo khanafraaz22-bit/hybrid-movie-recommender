@@ -2,6 +2,10 @@
 
 > *Four models. One perfect recommendation.*
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20App-gold?style=for-the-badge)](https://hybrid-movie-recommender-puce.vercel.app)
+[![Backend](https://img.shields.io/badge/Backend-Railway-blueviolet?style=for-the-badge)](https://hybrid-movie-recommender-production.up.railway.app/health)
+[![Models](https://img.shields.io/badge/Models-Hugging%20Face-yellow?style=for-the-badge)](https://huggingface.co/datasets/afraazkhan22/hybrid-movie-recommender-models)
+
 A full-stack, production-grade movie recommendation engine built on the **MovieLens 20M** dataset. Combines collaborative filtering, Bayesian Personalized Ranking, neural matrix factorization, and TF-IDF content similarity into a single hybrid blend — served through a sleek React frontend with a warm cinematic UI.
 
 ---
@@ -141,6 +145,7 @@ npm run dev
 | GET | `/recommendations/per-model` | Top 10 per model for A/B comparison |
 | GET/POST | `/watchlist` | Get or add watchlist items |
 | GET/POST | `/ratings/{id}` | Get or submit a star rating |
+
 
 ## 🛠️ Tech Stack
 
